@@ -1,5 +1,6 @@
 var test = require('tape');
 var resolve = require('../');
+var path = require('path');
 
 test('foo', function (t) {
     var dir = __dirname + '/resolver';
@@ -17,6 +18,18 @@ test('foo', function (t) {
     t.throws(function () {
         resolve.sync('foo', { basedir : dir });
     });
+
+    // Test that filename is reported as the "from" value when passed.
+    t.throws(
+        function () {
+            resolve.sync('foo', { basedir : dir, filename : path.join(dir, 'bar.js') });
+        },
+        {
+            name : 'Error',
+            message : "Cannot find module 'foo' from '" +
+                path.join(dir, 'bar.js') + "'"
+        }
+    );
     
     t.end();
 });
